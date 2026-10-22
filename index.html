@@ -670,6 +670,7 @@ try{
   initOffice(THREE);
   window.__pv3d="ok";
 }catch(e){
+  console.error("PV3D init failed:", e);
   const f=document.getElementById("scene-fallback");
   if(f)f.textContent="MODE 3D TIDAK TERMUAT DI PERANGKAT INI. PAPAN STATUS DI BAWAH TETAP LENGKAP.";
 }
@@ -814,13 +815,15 @@ function initOffice(THREE){
     const trim=box(49.4-i*0.9,0.16,33.4-i*0.9,0xffd60a,0,-0.95-i*2.72,0,M(0xffd60a,0.4));
     trim.material=new THREE.MeshBasicMaterial({color:0x8a6d00}); scene.add(trim);
   }
+  const shaft=new THREE.Mesh(new THREE.BoxGeometry(46.5,26,30.5),facadeMat);
+  shaft.position.y=-21.2; scene.add(shaft);
   /* ---------- metropolitan surroundings: skyline around the tower top floor ---------- */
   const groundFar=new THREE.Mesh(new THREE.PlaneGeometry(600,600),M(0x272b36,1));
   groundFar.rotation.x=-Math.PI/2; groundFar.position.y=-34; scene.add(groundFar);
   {const tr=rngOf(31337);
    const tower=(bx,bz,bw,bd,bh,vi)=>{
-     const bld=new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bd),FACADE_MATS[vi%3]);
-     bld.position.set(bx,bh/2-18,bz); bld.rotation.y=tr()*0.6-0.3; scene.add(bld);
+     const bld=new THREE.Mesh(new THREE.BoxGeometry(bw,bh+16,bd),FACADE_MATS[vi%3]);
+     bld.position.set(bx,bh/2-26,bz); bld.rotation.y=tr()*0.6-0.3; scene.add(bld);
      const cap=box(bw+0.5,0.35,bd+0.5,0x14161a,bx,bh-18+0.18,bz); cap.rotation.y=bld.rotation.y; scene.add(cap);
      if(tr()>0.55){
        const th=3+tr()*5;
@@ -1302,7 +1305,7 @@ function initOffice(THREE){
     labelsHost.appendChild(tag);
     const srng=rngOf(hash(a.id));
     return {a,g,ringMat,tag,desk:deskByAgent[a.id],legL,legR,armL,armR,headG,zzz,
-      mode:"idle",seat:0,liftY:0,walkPhase:srng()*6,phase:srng()*6.28,beh:null,behSlot:-1,behMode:"",route:null,routeKey:"",
+      mode:"idle",seat:0,liftY:0,walkPhase:srng()*6,phase:srng()*6.28,beh:null,behSlot:-1,behMode:"",route:null,routeKey:"",avoidDir:idx%2?1:-1,progT:0,lastX:undefined,lastZ:undefined,
       fx:0.09+srng()*0.08, fz:0.09+srng()*0.08, p1:srng()*6.28, p2:srng()*6.28,
       timeScale:1.0+srng()*0.5, slotOff:Math.floor(srng()*4)};
   }
@@ -1413,6 +1416,7 @@ function initOffice(THREE){
   }
   function collide(c){
     const r=0.34; let x=c.g.position.x, z=c.g.position.z;
+    const sx=x, sz=z;
     for(let pass=0;pass<2;pass++){
       for(const o of OBSTACLES){
         const nx=Math.max(o.x1,Math.min(x,o.x2)), nz=Math.max(o.z1,Math.min(z,o.z2));
@@ -1426,6 +1430,27 @@ function initOffice(THREE){
     }
     c.g.position.x=Math.max(-24.2,Math.min(24.2,x));
     c.g.position.z=Math.max(-16.2,Math.min(16.3,z));
+    return Math.hypot(c.g.position.x-sx,c.g.position.z-sz);
+  }
+  /* step toward a point; when furniture blocks the straight line, slide along it
+     and flip the preferred side when a side fails: agents round obstacles instead of jamming */
+  function stepToward(c,tx,tz,dt,spd){
+    const dx=tx-c.g.position.x, dz=tz-c.g.position.z, d=Math.hypot(dx,dz);
+    if(d<0.02)return 0;
+    const step=Math.min(d,spd*dt), ux=dx/d, uz=dz/d;
+    const ox=c.g.position.x, oz=c.g.position.z;
+    c.g.position.x+=ux*step; c.g.position.z+=uz*step;
+    const corr=collide(c);
+    if(corr>step*0.45){
+      const s=c.avoidDir||1;
+      c.g.position.x=ox-uz*s*step; c.g.position.z=oz+ux*s*step;
+      const corr2=collide(c);
+      if(corr2>step*0.45){
+        c.g.position.x=ox+uz*s*step; c.g.position.z=oz-ux*s*step;
+        collide(c); c.avoidDir=-s;
+      }
+    }
+    return Math.hypot(c.g.position.x-ox,c.g.position.z-oz);
   }
   function syncModes(){
     const now=wibNow();
@@ -1557,12 +1582,25 @@ function initOffice(THREE){
       const maxSpd=c.beh.k==="desk"||c.beh.k==="patrolroute"?2.6:1.7;
       let stepped=0;
       if(dist>0.02){
-        stepped=Math.min(dist,maxSpd*dt);
-        c.g.position.x+=dx/dist*stepped; c.g.position.z+=dz/dist*stepped;
-        if(c.seat<0.5)turnTo(c,Math.atan2(dx,dz),dt,10);
+        stepped=stepToward(c,target.x,target.z,dt,maxSpd);
+        if(c.seat<0.5&&dist>0.3)turnTo(c,Math.atan2(dx,dz),dt,10);
       }
       if(!isFinal&&dist<0.55)c.route.shift();
-      collide(c);
+      /* stuck detection: target still far but barely moved: sidestep to a detour point */
+      c.progT=(c.progT||0)+dt;
+      if(c.progT>2.2){
+        if(c.lastX===undefined){c.lastX=c.g.position.x;c.lastZ=c.g.position.z;}
+        const movedH=Math.hypot(c.g.position.x-c.lastX,c.g.position.z-c.lastZ);
+        if(dist>1.4&&movedH<0.12&&c.seat<0.5){
+          const s=c.avoidDir||1;
+          const ang=Math.atan2(dx,dz)+s*Math.PI/2;
+          const wx=Math.max(-23.5,Math.min(23.5,c.g.position.x+Math.sin(ang)*1.8));
+          const wz=Math.max(-15.5,Math.min(15.8,c.g.position.z+Math.cos(ang)*1.8));
+          c.route=[{x:wx,z:wz}].concat(c.route&&c.route.length?c.route:[{x:anchor.x,z:anchor.z}]);
+          c.avoidDir=-s;
+        }
+        c.lastX=c.g.position.x; c.lastZ=c.g.position.z; c.progT=0;
+      }
       const pose=isFinal?(anchor.pose||"stand"):"walk";
       const arrived=isFinal&&dist<0.3;
       const seatPose=pose==="desk"||pose==="meet"||pose==="sofa"||pose==="sleep";
