@@ -823,7 +823,7 @@ function initOffice(THREE){
   {const tr=rngOf(31337);
    const tower=(bx,bz,bw,bd,bh,vi)=>{
      const bld=new THREE.Mesh(new THREE.BoxGeometry(bw,bh+16,bd),FACADE_MATS[vi%3]);
-     bld.position.set(bx,bh/2-26,bz); bld.rotation.y=tr()*0.6-0.3; scene.add(bld);
+     bld.position.set(bx,bh/2-26,bz); bld.rotation.y=(bx===0&&bz===39)?0:tr()*0.6-0.3; scene.add(bld);
      const cap=box(bw+0.5,0.35,bd+0.5,0x14161a,bx,bh-18+0.18,bz); cap.rotation.y=bld.rotation.y; scene.add(cap);
      if(tr()>0.55){
        const th=3+tr()*5;
@@ -847,7 +847,7 @@ function initOffice(THREE){
      if(Math.abs(bx)<23&&bz>30)continue;
      tower(bx,bz,11+tr()*11,10+tr()*9,16+tr()*34,(i+1)%3);
    }
-   tower(0,47,30,12,30,1);
+   tower(0,39,30,12,36,1);
   }
   /* ---------- floor ---------- */
   const fcv=document.createElement("canvas"); fcv.width=fcv.height=256;
@@ -938,10 +938,11 @@ function initOffice(THREE){
     g.fillStyle="#f5f5f0"; g.font="700 38px 'JetBrains Mono', monospace";
     g.fillText("VIRTUAL.PEKA.AI.ID",312,240);
   },1024,320);
-  const bb=new THREE.Mesh(new THREE.PlaneGeometry(17,5.3),new THREE.MeshBasicMaterial({map:bbTex}));
-  bb.position.set(0,9.5,40.3); bb.rotation.y=Math.PI; scene.add(bb);
-  const bbLogo=new THREE.Mesh(new THREE.PlaneGeometry(4.3,4.3),new THREE.MeshBasicMaterial({map:mascotTex,transparent:true}));
-  bbLogo.position.set(6.0,9.5,40.25); bbLogo.rotation.y=Math.PI; scene.add(bbLogo);
+  const bb=new THREE.Mesh(new THREE.PlaneGeometry(21,6.5),new THREE.MeshBasicMaterial({map:bbTex}));
+  scene.add(box(21.7,7.1,0.16,0x0d0d0f,0,6.8,32.96));
+  bb.position.set(0,6.8,32.85); bb.rotation.y=Math.PI; scene.add(bb);
+  const bbLogo=new THREE.Mesh(new THREE.PlaneGeometry(5.2,5.2),new THREE.MeshBasicMaterial({map:mascotTex,transparent:true}));
+  bbLogo.position.set(7.3,6.8,32.82); bbLogo.rotation.y=Math.PI; scene.add(bbLogo);
   const clockG=new THREE.Group(); clockG.position.set(9.3,2.4,-16.84); scene.add(clockG);
   const rim=new THREE.Mesh(new THREE.TorusGeometry(0.56,0.05,10,32),M(0x141414,0.4)); clockG.add(rim);
   const face=new THREE.Mesh(new THREE.CircleGeometry(0.54,32),new THREE.MeshBasicMaterial({color:0xfbfbf8})); face.position.z=0.01; clockG.add(face);
@@ -1018,13 +1019,15 @@ function initOffice(THREE){
     const lp=textPlate(dv.no+" "+dv.name.toUpperCase(),Math.min(zn.w*0.62,7.5));
     lp.position.set(zn.x-zn.w/2+lp.geometry.parameters.width/2+0.35,0.115,zn.z+zn.d/2-0.75); scene.add(lp);
     const agents=AGENTS.filter(a=>a.div===dv.id);
-    const deskZ=zn.z-zn.d/2+1.3;
-    ob(zn.x-zn.w/2+0.35,deskZ-0.8,zn.x+zn.w/2-0.35,deskZ+0.5);
+    const flip=dv.id==="infra";
+    const deskZ=flip?zn.z+zn.d/2-1.3:zn.z-zn.d/2+1.3;
+    if(flip)ob(zn.x-zn.w/2+0.35,deskZ-0.5,zn.x+zn.w/2-0.35,deskZ+0.8);
+    else ob(zn.x-zn.w/2+0.35,deskZ-0.8,zn.x+zn.w/2-0.35,deskZ+0.5);
     agents.forEach((a,i)=>{
       const n=agents.length;
       const dx=n===1?zn.x:zn.x-zn.w/2+1.9+(zn.w-3.8)*(i/(n-1));
       const big=a.id==="dipa"?1.45:1;
-      const gd=new THREE.Group(); gd.position.set(dx,0,deskZ);
+      const gd=new THREE.Group(); gd.position.set(dx,0,deskZ); if(flip)gd.rotation.y=Math.PI;
       const topEdge=box(2.3*big,0.1,1.05,0x111111,0,0.76,0); topEdge.castShadow=true; gd.add(topEdge);
       const top=box(2.14*big,0.06,0.92,0xfbfbf8,0,0.83,0); top.receiveShadow=true; gd.add(top);
       gd.add(box(0.1,0.76,0.9,0x111111,-1.02*big,0.38,0));
@@ -1049,20 +1052,20 @@ function initOffice(THREE){
       const base=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.33,0.045,14),M(0x141414,0.4)); base.position.y=0.03; chair.add(base);
       gd.add(chair);
       scene.add(gd);
-      deskByAgent[a.id]={x:dx,z:deskZ,chairZ:deskZ+0.95,screenMat};
+      deskByAgent[a.id]={x:dx,z:deskZ,chairZ:deskZ+(flip?-0.95:0.95),face:flip?0:Math.PI,screenMat};
     });
   });
   /* ---------- racks ---------- */
   const rackMats=[];
   for(let i=0;i<3;i++){
-    const rack=box(1.1,2.6,0.9,0x23232a,13.6+i*1.5,1.3,0.4); rack.castShadow=true; scene.add(rack);
+    const rack=box(0.9,2.6,1.1,0x23232a,24.15,1.3,2.2+i*1.5); rack.castShadow=true; scene.add(rack);
     for(let j=0;j<4;j++){
       const m=new THREE.MeshBasicMaterial({color:j%2?0xffd60a:0x3f8a80});
       const dot=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.07),m);
-      dot.position.set(13.6+i*1.5,0.6+j*0.55,0.86); scene.add(dot); rackMats.push(m);
+      dot.rotation.y=-Math.PI/2; dot.position.set(23.69,0.6+j*0.55,2.2+i*1.5); scene.add(dot); rackMats.push(m);
     }
   }
-  ob(13.0,-0.1,17.3,1.0);
+  ob(23.6,1.55,24.75,5.35);
 
   /* ---------- lounge: sofas, bookshelf, beanbags, lamp ---------- */
   const rug=box(LOUNGE.w-2,0.05,LOUNGE.d-2,0xf2e3c9,LOUNGE.x,0.03,LOUNGE.z); rug.receiveShadow=true; scene.add(rug);
@@ -1074,8 +1077,10 @@ function initOffice(THREE){
     s.add(box(1.55,0.13,0.95,0xffd60a,-0.85,0.62,0.05)); s.add(box(1.55,0.13,0.95,0xfbfbf8,0.85,0.62,0.05));
     scene.add(s);};
   sofa(LOUNGE.x-2.5,LOUNGE.z-2.7,0); sofa(LOUNGE.x-2.5,LOUNGE.z+3.2,Math.PI);
+  sofa(-11,4.6,-Math.PI/2); ob(-10.68,2.8,-10.32,6.4);
   ob(LOUNGE.x-4.4,1.2,LOUNGE.x-0.6,1.58); ob(LOUNGE.x-4.4,8.17,LOUNGE.x-0.6,8.55); ob(-18.9,4.35,-17.1,5.35);
   scene.add(box(1.7,0.3,0.9,0xfbfbf8,LOUNGE.x-2.5,0.18,LOUNGE.z+0.25));
+  scene.add(box(1.1,0.3,1.1,0xfbfbf8,-16.2,0.18,4.85)); ob(-16.8,4.3,-15.6,5.4);
   const shelf=new THREE.Group(); shelf.position.set(-24.55,0,0.5); scene.add(shelf);
   shelf.add(box(0.45,2.3,3.0,0x2b2b26,0,1.15,0));
   const BOOKC=[0xd96f52,0x3f8a80,0xffd60a,0x5b7a99,0xb85c83,0xfbfbf8];
@@ -1316,13 +1321,15 @@ function initOffice(THREE){
   const CORRIDOR={x:0,z:0.3,w:28,d:2.0};
   const POST_PT={x:-5.2,z:11.7};
   const PATROL=[[-12.5,10.8],[-12.5,15.0],[2.5,15.0],[2.5,11.0],[-5.2,10.6]];
-  const SOFA_SEATS=[{x:-18.85,z:1.95,face:0},{x:-17.15,z:1.95,face:0},{x:-18.85,z:7.75,face:Math.PI},{x:-17.15,z:7.75,face:Math.PI},{x:-20.5,z:10.4,face:Math.PI},{x:-10.8,z:10.7,face:Math.PI}];
+  const SOFA_SEATS=[{x:-18.85,z:1.95,face:0},{x:-17.15,z:1.95,face:0},{x:-18.85,z:7.75,face:Math.PI},{x:-17.15,z:7.75,face:Math.PI},{x:-20.5,z:10.4,face:Math.PI},{x:-10.8,z:10.7,face:Math.PI},{x:-11.05,z:3.75,face:-Math.PI/2},{x:-11.05,z:5.45,face:-Math.PI/2}];
   const MEET_SEATS=[[-2.7,-1.5,0],[-0.9,-1.5,0],[0.9,-1.5,0],[2.7,-1.5,0],[-2.7,1.5,Math.PI],[-0.9,1.5,Math.PI],[0.9,1.5,Math.PI],[2.7,1.5,Math.PI]].map(([cx,cz,f])=>({x:MEET.x+cx,z:MEET.z+cz,face:f}));
   const inMeet=(x,z)=>x>4.7&&x<16.5&&z>2.4&&z<11.0;
   function zoneWander(c){
     const zn=ZONE[c.a.div], dz=c.desk.z;
-    const z1=dz+1.75, z2=zn.z+zn.d/2-0.75;
-    return {x:zn.x,z:(z1+z2)/2,w:zn.w-1.8,d:Math.max(1.2,z2-z1)};
+    const south=c.desk.chairZ>dz;
+    const z1=south?dz+1.75:zn.z-zn.d/2+0.75;
+    const z2=south?zn.z+zn.d/2-0.75:dz-1.75;
+    return {x:zn.x,z:(z1+z2)/2,w:zn.w-1.8,d:Math.max(1.2,Math.abs(z2-z1))};
   }
   function liss(c,rect,tSec){
     const te=tSec*c.timeScale;
@@ -1335,7 +1342,7 @@ function initOffice(THREE){
     const dv=others[Math.floor(r()*others.length)];
     const host=AGENTS.find(x=>x.div===dv.id);
     const dk=deskByAgent[host.id];
-    return {x:dk.x,z:dk.z+2.15,divName:dv.name};
+    return {x:dk.x,z:dk.chairZ+(dk.chairZ>dk.z?1.2:-1.2),face:dk.chairZ>dk.z?Math.PI:0,divName:dv.name};
   }
   function longIdle(a,now){
     const nx=nextWindow(a,now);
@@ -1397,11 +1404,11 @@ function initOffice(THREE){
     switch(b.k){
       case "desk": return{x:c.desk.x,z:c.desk.chairZ,pose:"desk"};
       case "stretch": return{x:c.desk.x,z:c.desk.chairZ,pose:"stretch"};
-      case "pantry": return{x:PANTRY_PT.x+(b.jx||0)*1.6+((hash(c.a.id)%5)-2)*0.55,z:PANTRY_PT.z+0.25+(b.jz||0)*0.5,pose:"stand",face:Math.PI};
+      case "pantry": return{x:Math.min(23.9,Math.max(20.9,PANTRY_PT.x+(b.jx||0)*1.6+((hash(c.a.id)%5)-2)*0.55)),z:PANTRY_PT.z+0.25+(b.jz||0)*0.5,pose:"stand",face:Math.PI};
       case "patrol": return Object.assign(liss(c,zoneWander(c),tSec),{pose:"walk"});
       case "corridor": return Object.assign(liss(c,CORRIDOR,tSec),{pose:"walk"});
       case "wander": return Object.assign(liss(c,LANE,tSec),{pose:"walk"});
-      case "visit": return{x:b.target.x+(b.jx||0)*1.5,z:b.target.z+(b.jz||0)*0.5,pose:"stand",face:Math.PI};
+      case "visit": return{x:b.target.x+(b.jx||0)*1.5,z:b.target.z+(b.jz||0)*0.5,pose:"stand",face:b.target.face!==undefined?b.target.face:Math.PI};
       case "sofa": {const s=SOFA_SEATS[b.seat%SOFA_SEATS.length];return{x:s.x+(b.jx||0)*0.22,z:s.z,pose:"sofa",face:s.face};}
       case "sleep": {const s=SOFA_SEATS[b.seat%SOFA_SEATS.length];return{x:s.x+(b.jx||0)*0.22,z:s.z,pose:"sleep",face:s.face};}
       case "meet": {const s=MEET_SEATS[b.seat%8];return{x:s.x+(b.jx||0)*0.15,z:s.z,pose:"meet",face:s.face};}
@@ -1414,7 +1421,8 @@ function initOffice(THREE){
   const inLounge=(x,z)=>x>-23.6&&x<-7.4&&z>-0.8&&z<11.6;
   function buildRoute(c,anchor){
     const pts=[];
-    let px=c.g.position.x, pz=c.g.position.z;
+    const sx0=c.g.position.x, sz0=c.g.position.z;
+    let px=sx0, pz=sz0;
     const push=(x,z)=>{if(pts.length&&Math.hypot(pts[pts.length-1].x-x,pts[pts.length-1].z-z)<0.05)return;pts.push({x,z});px=x;pz=z;};
     const band=z=>z<-9.5?2:z<-2.2?1:0;
     const aisle=b=>b===2?-9.1:-0.9;
@@ -1443,6 +1451,11 @@ function initOffice(THREE){
         push(targetInLounge?LOUNGE_IN.x:anchor.x,-0.9);
       }
     }
+    else if(sb===2&&Math.abs(anchor.x-px)>4){push(px,-9.1);push(anchor.x,-9.1);}
+    else if(sb===0&&anchor.pose==="desk"){
+      if(Math.abs(pz+0.9)>0.55)push(px,-0.9);
+      if(Math.abs(anchor.x-px)>0.55)push(anchor.x,-0.9);
+    }
     if(inMeet(anchor.x,anchor.z)&&!inMeet(px,pz)){
       push(DOOR.x,DOOR.z);
       const preZ=anchor.z<MEET.z?anchor.z-0.95:anchor.z+0.95;
@@ -1457,7 +1470,8 @@ function initOffice(THREE){
         if(Math.hypot(px-fx,pz-fz)>0.4&&Math.hypot(px-s.x,pz-s.z)>0.4)push(fx,fz);}
     }
     push(anchor.x,anchor.z);
-    return pts;
+    const d0=Math.hypot(anchor.x-sx0,anchor.z-sz0);
+    return pts.filter((pt,i)=>i===pts.length-1||Math.hypot(anchor.x-pt.x,anchor.z-pt.z)<=d0+1.0||Math.hypot(pt.x-sx0,pt.z-sz0)>=2.2);
   }
   function collide(c){
     const r=0.34; let x=c.g.position.x, z=c.g.position.z;
@@ -1618,12 +1632,22 @@ function initOffice(THREE){
       const slotNow=Math.floor(tSec/SLOT);
       if(c.behSlot!==slotNow||c.behMode!==c.mode){c.beh=behaviorFor(c,now,tSec);c.behSlot=slotNow;c.behMode=c.mode;c.route=null;}
       const anchor=anchorFor(c,now,tSec);
-      if(anchor.pose==="stand"){anchor.x+=Math.sin(tSec*0.33+c.p1)*0.3;anchor.z+=Math.cos(tSec*0.27+c.p2)*0.3;}
-      if(c.beh.k==="patrol"||c.beh.k==="corridor"||c.beh.k==="wander"||c.beh.k==="post"||c.beh.k==="patrolroute"){c.route=null;c.routeKey="moving";}
+      if(c.beh.k==="post"||c.beh.k==="patrolroute"){c.route=null;c.routeKey="moving";}
+      else if(c.beh.k==="patrol"){
+        const zn=ZONE[c.a.div];
+        const home=Math.abs(c.g.position.x-zn.x)<zn.w/2+1&&Math.abs(c.g.position.z-zn.z)<zn.d/2+1;
+        if(home){c.route=null;c.routeKey="moving";}
+        else{const behK="patrol|"+c.behSlot; if(c.routeKey!==behK){c.routeKey=behK;c.route=buildRoute(c,anchor);}}
+      }
+      else if(c.beh.k==="corridor"||c.beh.k==="wander"){
+        const behK=c.beh.k+"|"+c.behSlot;
+        if(c.routeKey!==behK){c.routeKey=behK;c.route=buildRoute(c,anchor);}
+      }
       else{
         const behK=c.beh.k+"|"+c.behSlot+"|"+anchor.x.toFixed(1)+","+anchor.z.toFixed(1);
         if(c.routeKey!==behK){c.routeKey=behK;c.route=buildRoute(c,anchor);}
       }
+      if(anchor.pose==="stand"){anchor.x+=Math.sin(tSec*0.33+c.p1)*0.3;anchor.z+=Math.cos(tSec*0.27+c.p2)*0.3;}
       let target=anchor, isFinal=true;
       if(c.route&&c.route.length>1){target=c.route[0];isFinal=false;}
       const dx=target.x-c.g.position.x, dz=target.z-c.g.position.z;
@@ -1685,7 +1709,7 @@ function initOffice(THREE){
         }
       });
       if(c.seat>0.5&&pose==="desk"){
-        turnTo(c,Math.PI,dt,6);
+        turnTo(c,c.desk&&c.desk.face!==undefined?c.desk.face:Math.PI,dt,6);
         const jit=Math.sin(t*7+c.phase)*0.06;
         c.armL.rotation.x=-0.88+jit; c.armR.rotation.x=-0.88-jit;
         c.armL.rotation.z=0; c.armR.rotation.z=0;
