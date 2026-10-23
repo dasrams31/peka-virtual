@@ -387,9 +387,9 @@ const AGENTS=[
   skills:["Linux & Server","Backup GitHub + GitLab","Monitoring 24/7"],base:"siaga",
   windows:[W(ALL,"04:36","04:55","Backup harian repo rilis"),W(ALL,"06:36","06:46","Push peka-content ke GitHub dan GitLab"),W(ALL,"06:50","07:00","Push repo kerja ke GitHub dan GitLab")]},
  {id:"satria",name:"Satria",role:"Satpam",div:"infra",av:"dark",
-  about:"Satpam kantor virtual PekaAI. Satria jaga pos di belakang meja resepsi dekat bendera PekaAI, menerima tamu, dan patroli keliling kantor empat kali sehari. Semua yang masuk kantor lewat pengawasan dia.",
-  skills:["Keamanan Kantor","Patroli Rutin","Penerimaan Tamu"],base:"siaga",baseWin:["00:00","24:00"],baseLabel:"Jaga pos di belakang resepsi",
-  windows:[W(ALL,"00:05","00:25","Patroli malam keliling kantor"),W(ALL,"06:00","06:20","Patroli pagi keliling kantor"),W(ALL,"12:00","12:20","Patroli siang keliling kantor"),W(ALL,"18:00","18:20","Patroli sore keliling kantor")]}
+  about:"Satpam kantor virtual PekaAI. Satria jaga area depan di sekitar meja resepsi dekat bendera PekaAI, menerima tamu, dan patroli keliling area depan empat kali sehari. Semua yang masuk kantor lewat pengawasan dia.",
+  skills:["Keamanan Kantor","Patroli Rutin","Penerimaan Tamu"],base:"siaga",baseWin:["00:00","24:00"],baseLabel:"Keliling area depan resepsi",
+  windows:[W(ALL,"00:05","00:25","Patroli malam area depan resepsi"),W(ALL,"06:00","06:20","Patroli pagi area depan resepsi"),W(ALL,"12:00","12:20","Patroli siang area depan resepsi"),W(ALL,"18:00","18:20","Patroli sore area depan resepsi")]}
 ];
 const AG={}; AGENTS.forEach(a=>AG[a.id]=a);
 
@@ -688,7 +688,7 @@ function initOffice(THREE){
     store:{x:3,z:-5.4,w:6,d:6.4}, riset:{x:9.4,z:-5.4,w:6,d:6.4}, marketing:{x:15.6,z:-5.4,w:5.6,d:6.4},
     produk:{x:21.2,z:-5.4,w:5.2,d:6.4}, infra:{x:17.8,z:3.4,w:11.6,d:7.6}};
   const LOUNGE={x:-15.5,z:4.6,w:15,d:10};
-  const LANE={x:-15.5,z:4.9,w:13,d:2.6};
+  const LANE={x:-13.9,z:4.9,w:7.6,d:1.7};
   const MEET={x:10.5,z:6.7,w:12,d:9};
   const MEET_IN={x:10.5,z:6.7,w:9.6,d:6.6};
   const DOOR={x:4.1,z:6.7};
@@ -1074,7 +1074,7 @@ function initOffice(THREE){
     s.add(box(1.55,0.13,0.95,0xffd60a,-0.85,0.62,0.05)); s.add(box(1.55,0.13,0.95,0xfbfbf8,0.85,0.62,0.05));
     scene.add(s);};
   sofa(LOUNGE.x-2.5,LOUNGE.z-2.7,0); sofa(LOUNGE.x-2.5,LOUNGE.z+3.2,Math.PI);
-  ob(LOUNGE.x-4.4,1.15,LOUNGE.x-0.6,2.65); ob(LOUNGE.x-4.4,7.05,LOUNGE.x-0.6,8.55); ob(-18.9,4.35,-17.1,5.35);
+  ob(LOUNGE.x-4.4,1.2,LOUNGE.x-0.6,1.58); ob(LOUNGE.x-4.4,8.17,LOUNGE.x-0.6,8.55); ob(-18.9,4.35,-17.1,5.35);
   scene.add(box(1.7,0.3,0.9,0xfbfbf8,LOUNGE.x-2.5,0.18,LOUNGE.z+0.25));
   const shelf=new THREE.Group(); shelf.position.set(-24.55,0,0.5); scene.add(shelf);
   shelf.add(box(0.45,2.3,3.0,0x2b2b26,0,1.15,0));
@@ -1088,7 +1088,7 @@ function initOffice(THREE){
        shelf.add(bk); bz+=bw+0.03;}
    }}
   ob(-25.0,-1.1,-24.1,2.1);
-  const bean=(x,z,c)=>{const b=new THREE.Mesh(new THREE.SphereGeometry(0.62,14,10),M(c,1));b.scale.set(1,0.55,1);b.position.set(x,0.3,z);b.castShadow=true;scene.add(b);ob(x-0.55,z-0.55,x+0.55,z+0.55);};
+  const bean=(x,z,c)=>{const b=new THREE.Mesh(new THREE.SphereGeometry(0.62,14,10),M(c,1));b.scale.set(1,0.55,1);b.position.set(x,0.3,z);b.castShadow=true;scene.add(b);};
   bean(-20.5,10.4,0xffd60a); bean(-10.8,10.7,0xb9b9ae);
   const lamp=new THREE.Group(); lamp.position.set(-22.3,0,9.3);
   const lpole=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,1.65,8),M(0x141414,0.4)); lpole.position.y=0.82; lamp.add(lpole);
@@ -1305,7 +1305,7 @@ function initOffice(THREE){
     labelsHost.appendChild(tag);
     const srng=rngOf(hash(a.id));
     return {a,g,ringMat,tag,desk:deskByAgent[a.id],legL,legR,armL,armR,headG,zzz,
-      mode:"idle",seat:0,liftY:0,walkPhase:srng()*6,phase:srng()*6.28,beh:null,behSlot:-1,behMode:"",route:null,routeKey:"",avoidDir:idx%2?1:-1,progT:0,lastX:undefined,lastZ:undefined,
+      mode:"idle",seat:0,liftY:0,walkPhase:srng()*6,phase:srng()*6.28,beh:null,behSlot:-1,behMode:"",route:null,routeKey:"",avoidDir:idx%2?1:-1,progT:0,stuckN:0,lastX:undefined,lastZ:undefined,
       fx:0.09+srng()*0.08, fz:0.09+srng()*0.08, p1:srng()*6.28, p2:srng()*6.28,
       timeScale:1.0+srng()*0.5, slotOff:Math.floor(srng()*4)};
   }
@@ -1313,9 +1313,9 @@ function initOffice(THREE){
   /* ---------- human-like behavior engine (deterministic per 6-minute slot) ---------- */
   const SLOT=240;
   const PANTRY_PT={x:22.5,z:-14.15};
-  const CORRIDOR={x:0,z:0.3,w:36,d:2.4};
+  const CORRIDOR={x:0,z:0.3,w:28,d:2.0};
   const POST_PT={x:-5.2,z:11.7};
-  const PATROL=[[-20,-1],[0,-1],[20,-1],[20,8],[10,13.4],[-12,13.6],[-20,6]];
+  const PATROL=[[-12.5,10.8],[-12.5,15.0],[2.5,15.0],[2.5,11.0],[-5.2,10.6]];
   const SOFA_SEATS=[{x:-18.85,z:1.95,face:0},{x:-17.15,z:1.95,face:0},{x:-18.85,z:7.75,face:Math.PI},{x:-17.15,z:7.75,face:Math.PI},{x:-20.5,z:10.4,face:Math.PI},{x:-10.8,z:10.7,face:Math.PI}];
   const MEET_SEATS=[[-2.7,-1.5,0],[-0.9,-1.5,0],[0.9,-1.5,0],[2.7,-1.5,0],[-2.7,1.5,Math.PI],[-0.9,1.5,Math.PI],[0.9,1.5,Math.PI],[2.7,1.5,Math.PI]].map(([cx,cz,f])=>({x:MEET.x+cx,z:MEET.z+cz,face:f}));
   const inMeet=(x,z)=>x>4.7&&x<16.5&&z>2.4&&z<11.0;
@@ -1350,7 +1350,7 @@ function initOffice(THREE){
     const J=()=>({jx:(r()-0.5),jz:(r()-0.5)});
     let b;
     if(c.a.id==="satria"){
-      b=c.mode==="work"?{k:"patrolroute",label:"Patroli keliling kantor",tx:0,tz:0}:{k:"post",label:"Jaga pos di belakang resepsi",tx:POST_PT.x,tz:POST_PT.z};
+      b={k:"patrolroute",label:c.mode==="work"?"Patroli area depan dan resepsi":"Keliling area depan resepsi",tx:0,tz:0};
       return Object.assign(b,J());
     }
     if(c.mode==="work"){
@@ -1369,12 +1369,24 @@ function initOffice(THREE){
     }
     if(c.mode==="idle"){
       const li=longIdle(c.a,now);
-      if(li&&pick<0.18){const si=Math.floor(r()*4);const s=SOFA_SEATS[si];b={k:"sleep",label:"Tidur di sofa lounge",seat:si,tx:s.x,tz:s.z};}
-      else if(pick<0.36){const si=Math.floor(r()*SOFA_SEATS.length);const s=SOFA_SEATS[si];b={k:"sofa",label:"Istirahat: duduk di lounge",seat:si,tx:s.x,tz:s.z};}
-      else if(pick<0.58)b={k:"wander",label:"Jalan jalan di area lounge",tx:LANE.x,tz:LANE.z};
-      else if(pick<0.72){const si=Math.floor(r()*8);const s=MEET_SEATS[si];b={k:"meet",label:"Ngobrol di ruang meeting",seat:si,tx:s.x,tz:s.z};}
-      else if(pick<0.86)b={k:"corridor",label:"Jalan santai di koridor",tx:0,tz:0.3};
-      else if(pick<0.94)b={k:"pantry",label:"Ngopi di pantry",tx:PANTRY_PT.x,tz:PANTRY_PT.z};
+      /* Lounge seats are claimed in AGENTS order: every idle agent whose slot
+         pick wants the lounge takes the next free seat, so nobody shares a
+         sofa seat (the old per-agent random seat caused overlaps) and long
+         idle agents actually sleep instead of pacing beside the sofa. */
+      const claimIdx=()=>{let n=0;const ds=now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate();
+        for(const o of AGENTS){if(o.id===c.a.id)break;const oc=chars[o.id];if(!oc||oc.mode!=="idle")continue;
+          const ro=rngOf(hash(o.id+"|"+ds+"|"+slot));if(ro()<0.64)n++;}
+        return n;};
+      if(pick<0.64){
+        const ci=claimIdx();
+        if(li&&pick<0.42&&ci<4){const s=SOFA_SEATS[ci];b={k:"sleep",label:"Tidur di sofa lounge",seat:ci,tx:s.x,tz:s.z};}
+        else if(ci<SOFA_SEATS.length){const s=SOFA_SEATS[ci];b={k:"sofa",label:"Istirahat: duduk di lounge",seat:ci,tx:s.x,tz:s.z};}
+        else b={k:"wander",label:"Jalan jalan di area lounge",tx:LANE.x,tz:LANE.z};
+      }
+      else if(pick<0.76)b={k:"wander",label:"Jalan jalan di area lounge",tx:LANE.x,tz:LANE.z};
+      else if(pick<0.86){const si=AGENTS.findIndex(x=>x.id===c.a.id)%MEET_SEATS.length;const s=MEET_SEATS[si];b={k:"meet",label:"Ngobrol di ruang meeting",seat:si,tx:s.x,tz:s.z};}
+      else if(pick<0.93)b={k:"corridor",label:"Jalan santai di koridor",tx:0,tz:0.3};
+      else if(pick<0.97)b={k:"pantry",label:"Ngopi di pantry",tx:PANTRY_PT.x,tz:PANTRY_PT.z};
       else{const tv=visitTarget(c,slot);b={k:"visit",label:"Mampir laporan ke "+tv.divName,target:tv,tx:tv.x,tz:tv.z};}
       return Object.assign(b,J());
     }
@@ -1385,33 +1397,66 @@ function initOffice(THREE){
     switch(b.k){
       case "desk": return{x:c.desk.x,z:c.desk.chairZ,pose:"desk"};
       case "stretch": return{x:c.desk.x,z:c.desk.chairZ,pose:"stretch"};
-      case "pantry": return{x:PANTRY_PT.x+(b.jx||0)*2.2,z:PANTRY_PT.z+0.25+(b.jz||0)*0.5,pose:"stand",face:Math.PI};
+      case "pantry": return{x:PANTRY_PT.x+(b.jx||0)*1.6+((hash(c.a.id)%5)-2)*0.55,z:PANTRY_PT.z+0.25+(b.jz||0)*0.5,pose:"stand",face:Math.PI};
       case "patrol": return Object.assign(liss(c,zoneWander(c),tSec),{pose:"walk"});
       case "corridor": return Object.assign(liss(c,CORRIDOR,tSec),{pose:"walk"});
       case "wander": return Object.assign(liss(c,LANE,tSec),{pose:"walk"});
       case "visit": return{x:b.target.x+(b.jx||0)*1.5,z:b.target.z+(b.jz||0)*0.5,pose:"stand",face:Math.PI};
       case "sofa": {const s=SOFA_SEATS[b.seat%SOFA_SEATS.length];return{x:s.x+(b.jx||0)*0.22,z:s.z,pose:"sofa",face:s.face};}
-      case "sleep": {const s=SOFA_SEATS[b.seat%4];return{x:s.x+(b.jx||0)*0.22,z:s.z,pose:"sleep",face:s.face};}
+      case "sleep": {const s=SOFA_SEATS[b.seat%SOFA_SEATS.length];return{x:s.x+(b.jx||0)*0.22,z:s.z,pose:"sleep",face:s.face};}
       case "meet": {const s=MEET_SEATS[b.seat%8];return{x:s.x+(b.jx||0)*0.15,z:s.z,pose:"meet",face:s.face};}
       case "post": return Object.assign(liss(c,{x:POST_PT.x,z:POST_PT.z,w:1.6,d:1.2},tSec),{pose:"stand"});
-      case "patrolroute": {const idx=Math.floor(tSec/70)%PATROL.length;const p=PATROL[idx];return{x:p[0],z:p[1],pose:"walk"};}
+      case "patrolroute": {const idx=Math.floor(tSec/50)%PATROL.length;const p=PATROL[idx];return{x:p[0],z:p[1],pose:"walk"};}
       default: return{x:c.g.position.x,z:c.g.position.z,pose:"stand"};
     }
   }
+  const LOUNGE_IN={x:-14.6,z:4.6};
+  const inLounge=(x,z)=>x>-23.6&&x<-7.4&&z>-0.8&&z<11.6;
   function buildRoute(c,anchor){
     const pts=[];
     let px=c.g.position.x, pz=c.g.position.z;
-    const push=(x,z)=>{pts.push({x,z});px=x;pz=z;};
-    if(inMeet(px,pz)&&!inMeet(anchor.x,anchor.z))push(DOOR.x,DOOR.z);
+    const push=(x,z)=>{if(pts.length&&Math.hypot(pts[pts.length-1].x-x,pts[pts.length-1].z-z)<0.05)return;pts.push({x,z});px=x;pz=z;};
     const band=z=>z<-9.5?2:z<-2.2?1:0;
-    if(band(pz)!==band(anchor.z)){
-      if(band(pz)===1)push(px,-0.9);
-      if(band(pz)===2)push(px,-8.3);
-      if(band(anchor.z)===1)push(anchor.x,-0.9);
-      if(band(anchor.z)===2)push(anchor.x,-8.3);
+    const aisle=b=>b===2?-9.1:-0.9;
+    const seatAt=(x,z)=>SOFA_SEATS.find(s=>Math.hypot(s.x-x,s.z-z)<0.45);
+    /* leaving a sofa or beanbag: step out to its front first, never through the backrest */
+    const st=seatAt(px,pz);
+    if(st&&Math.hypot(anchor.x-st.x,anchor.z-st.z)>0.35)push(st.x+Math.sin(st.face)*1.35,st.z+Math.cos(st.face)*1.35);
+    if(inMeet(px,pz)&&!inMeet(anchor.x,anchor.z)){
+      const ms=MEET_SEATS.find(s=>Math.hypot(s.x-px,s.z-pz)<0.5);
+      if(ms){const preZ=ms.z<MEET.z?ms.z-0.95:ms.z+0.95;push(ms.x,preZ);push(5.6,preZ);}
+      push(DOOR.x,DOOR.z);
     }
-    if(inMeet(anchor.x,anchor.z)&&!inMeet(px,pz))push(DOOR.x,DOOR.z);
-    pts.push({x:anchor.x,z:anchor.z});
+    /* leaving the lounge: exit via the east entry, not north through a sofa back */
+    if(inLounge(px,pz)&&!inLounge(anchor.x,anchor.z)){push(LOUNGE_IN.x,LOUNGE_IN.z);push(LOUNGE_IN.x,-0.9);}
+    const sb=band(pz), ab=band(anchor.z);
+    const targetInLounge=inLounge(anchor.x,anchor.z);
+    if(sb!==ab||sb===1){
+      const sa=aisle(sb);
+      if(Math.abs(pz-sa)>0.55)push(px,sa);
+      if(sb!==ab){
+        const ta=aisle(ab);
+        if(sa!==ta){push(-0.1,sa);push(-0.1,ta);}
+        const endX=targetInLounge?LOUNGE_IN.x:anchor.x;
+        if(Math.abs(endX-px)>0.55)push(endX,ta);
+      }else if(Math.abs(anchor.x-px)>0.55){
+        push(targetInLounge?LOUNGE_IN.x:anchor.x,-0.9);
+      }
+    }
+    if(inMeet(anchor.x,anchor.z)&&!inMeet(px,pz)){
+      push(DOOR.x,DOOR.z);
+      const preZ=anchor.z<MEET.z?anchor.z-0.95:anchor.z+0.95;
+      push(5.6,DOOR.z);push(5.6,preZ);push(anchor.x,preZ);
+    }
+    /* entering the lounge: via the east entry, then to the front of the seat,
+       so the final step onto a sofa comes from the room side, not its back */
+    if(targetInLounge&&!inLounge(px,pz))push(LOUNGE_IN.x,LOUNGE_IN.z);
+    if(anchor.pose==="sofa"||anchor.pose==="sleep"){
+      const s=seatAt(anchor.x,anchor.z);
+      if(s){const fx=s.x+Math.sin(s.face)*1.35, fz=s.z+Math.cos(s.face)*1.35;
+        if(Math.hypot(px-fx,pz-fz)>0.4&&Math.hypot(px-s.x,pz-s.z)>0.4)push(fx,fz);}
+    }
+    push(anchor.x,anchor.z);
     return pts;
   }
   function collide(c){
@@ -1470,6 +1515,7 @@ function initOffice(THREE){
     });
   }
   syncModes(); setInterval(syncModes,1500);
+  window.__pvPos=()=>{const nw=wibNow();const ts=nw.getHours()*3600+nw.getMinutes()*60+nw.getSeconds();return AGENTS.map(a=>{const cc=chars[a.id];const an=cc.beh?anchorFor(cc,nw,ts):{x:0,z:0,pose:"-"};const rp=cc.route&&cc.route.length?cc.route[0]:null;return{id:a.id,x:+cc.g.position.x.toFixed(2),z:+cc.g.position.z.toFixed(2),seat:+cc.seat.toFixed(2),mode:cc.mode,beh:cc.beh?cc.beh.k:"-",vis:cc.g.visible,ax:+an.x.toFixed(2),az:+an.z.toFixed(2),pose:an.pose,rx:rp?+rp.x.toFixed(2):null,rz:rp?+rp.z.toFixed(2):null,rn:cc.route?cc.route.length:0};});};
   {const t0=wibNow(); const ts=t0.getHours()*3600+t0.getMinutes()*60+t0.getSeconds();
    AGENTS.forEach(a=>{const c=chars[a.id]; if(c.g.visible){c.beh=behaviorFor(c,t0,ts);const an=anchorFor(c,t0,ts);c.g.position.x=an.x;c.g.position.z=an.z;collide(c);}});}
   /* ---------- interaction ---------- */
@@ -1573,8 +1619,11 @@ function initOffice(THREE){
       if(c.behSlot!==slotNow||c.behMode!==c.mode){c.beh=behaviorFor(c,now,tSec);c.behSlot=slotNow;c.behMode=c.mode;c.route=null;}
       const anchor=anchorFor(c,now,tSec);
       if(anchor.pose==="stand"){anchor.x+=Math.sin(tSec*0.33+c.p1)*0.3;anchor.z+=Math.cos(tSec*0.27+c.p2)*0.3;}
-      const behK=c.beh.k+"|"+c.behSlot+"|"+(c.beh.tx||0).toFixed(1)+","+(c.beh.tz||0).toFixed(1);
-      if(c.routeKey!==behK){c.routeKey=behK;c.route=buildRoute(c,anchor);}
+      if(c.beh.k==="patrol"||c.beh.k==="corridor"||c.beh.k==="wander"||c.beh.k==="post"||c.beh.k==="patrolroute"){c.route=null;c.routeKey="moving";}
+      else{
+        const behK=c.beh.k+"|"+c.behSlot+"|"+anchor.x.toFixed(1)+","+anchor.z.toFixed(1);
+        if(c.routeKey!==behK){c.routeKey=behK;c.route=buildRoute(c,anchor);}
+      }
       let target=anchor, isFinal=true;
       if(c.route&&c.route.length>1){target=c.route[0];isFinal=false;}
       const dx=target.x-c.g.position.x, dz=target.z-c.g.position.z;
@@ -1586,19 +1635,28 @@ function initOffice(THREE){
         if(c.seat<0.5&&dist>0.3)turnTo(c,Math.atan2(dx,dz),dt,10);
       }
       if(!isFinal&&dist<0.55)c.route.shift();
-      /* stuck detection: target still far but barely moved: sidestep to a detour point */
+      /* stuck detection: barely moved while the target is still away.
+         Seat targets (desk, sofa, meeting) snap in after two stalls so an
+         agent settles instead of pacing beside the furniture forever;
+         anything else gets a sidestep detour point like a person would. */
       c.progT=(c.progT||0)+dt;
       if(c.progT>2.2){
         if(c.lastX===undefined){c.lastX=c.g.position.x;c.lastZ=c.g.position.z;}
         const movedH=Math.hypot(c.g.position.x-c.lastX,c.g.position.z-c.lastZ);
-        if(dist>1.4&&movedH<0.12&&c.seat<0.5){
-          const s=c.avoidDir||1;
-          const ang=Math.atan2(dx,dz)+s*Math.PI/2;
-          const wx=Math.max(-23.5,Math.min(23.5,c.g.position.x+Math.sin(ang)*1.8));
-          const wz=Math.max(-15.5,Math.min(15.8,c.g.position.z+Math.cos(ang)*1.8));
-          c.route=[{x:wx,z:wz}].concat(c.route&&c.route.length?c.route:[{x:anchor.x,z:anchor.z}]);
-          c.avoidDir=-s;
-        }
+        const seatAnchor=anchor.pose==="desk"||anchor.pose==="sofa"||anchor.pose==="sleep"||anchor.pose==="meet";
+        if(dist>0.42&&movedH<0.10&&c.seat<0.5){
+          c.stuckN=(c.stuckN||0)+1;
+          if(seatAnchor&&dist<2.4&&c.stuckN>=2){
+            c.g.position.x=anchor.x; c.g.position.z=anchor.z; c.route=null; c.routeKey="snap"; c.stuckN=0;
+          }else if(dist>1.4){
+            const s=c.avoidDir||1;
+            const ang=Math.atan2(dx,dz)+s*Math.PI/2;
+            const wx=Math.max(-23.5,Math.min(23.5,c.g.position.x+Math.sin(ang)*1.8));
+            const wz=Math.max(-15.5,Math.min(15.8,c.g.position.z+Math.cos(ang)*1.8));
+            c.route=[{x:wx,z:wz}].concat(c.route&&c.route.length?c.route:[{x:anchor.x,z:anchor.z}]);
+            c.avoidDir=-s;
+          }
+        }else if(movedH>=0.10)c.stuckN=0;
         c.lastX=c.g.position.x; c.lastZ=c.g.position.z; c.progT=0;
       }
       const pose=isFinal?(anchor.pose||"stand"):"walk";
